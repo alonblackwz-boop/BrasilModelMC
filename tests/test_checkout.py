@@ -1,12 +1,16 @@
 """Testes de checkout: valores do banco, autenticação e isolamento dos pedidos."""
 import unittest
+import tempfile
+from pathlib import Path
 from app import create_app
 from models import db, User, Model3D, Purchase
 
 class CheckoutTest(unittest.TestCase):
     def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        Path(self.temp.name, "test.bbmodel").write_bytes(b"test")
         self.app = create_app({"TESTING": True, "SQLALCHEMY_DATABASE_URI": "sqlite://",
-                               "WTF_CSRF_ENABLED": False})
+                               "WTF_CSRF_ENABLED": False, "PRIVATE_MODELS_DIR": self.temp.name})
         self.ctx = self.app.app_context()
         self.ctx.push()
         db.drop_all()
@@ -28,6 +32,7 @@ class CheckoutTest(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.ctx.pop()
+        self.temp.cleanup()
 
     def login(self, user_id):
         with self.client.session_transaction() as sess:
