@@ -16,7 +16,7 @@
     <textarea id="code" readonly rows="4" style="display:none;width:100%"></textarea>
     <button type="button" id="copy" style="display:none">Copiar Pix</button>
   </div>
-  <a id="library" href="/api/library" {% if order.status != 'paid' %}hidden{% endif %}>Abrir minha biblioteca</a>
+  <a id="library" href="{{ url_for('library.page') }}" {% if order.status != 'paid' %}hidden{% endif %}>Abrir minha biblioteca</a>
 </section>
 <script>
 (() => {
