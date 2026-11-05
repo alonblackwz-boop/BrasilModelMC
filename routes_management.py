@@ -47,7 +47,7 @@ def validated(data, model):
         abort(400, "A capa deve ser uma URL HTTPS")
     if status == "published" and not model.file_path:
         abort(409, "Envie o arquivo do modelo antes de publicar")
-    if model.id is not None and status == "published" and price > 0:
+    if model.id is not None and status == "published":
         from pathlib import Path
         from flask import current_app
         path = Path(current_app.config["PRIVATE_MODELS_DIR"]).resolve()
@@ -130,7 +130,6 @@ def create_category():
 @login_required
 def upload_model_file(model_id):
     """Upload ZIP/BBMODEL para armazenamento fora da pasta static."""
-    import os
     import secrets
     from pathlib import Path
     from flask import current_app
