@@ -31,3 +31,67 @@
 .auth-switch a:hover{text-decoration:underline}
 .auth-error{padding:11px 14px;background:#44203b;border:1px solid #a9507b;border-radius:9px;color:#ffd9e7;font-size:13px}
 @media(max-width:560px){.auth-page{padding-top:20px;padding-bottom:45px}.auth-card{margin:20px 0 0;padding:32px 22px;border-radius:16px}}
+
+
+/* BrasilModelMC v0.4 — visual premium, navegação e home */
+.bmm-v04{background:#070b17;color:#edf2ff}
+.bmm-v04 .ambient{height:850px;background:radial-gradient(ellipse 43% 50% at 82% 26%,#6134c02a,transparent 75%),radial-gradient(ellipse 44% 44% at 16% 17%,#185bba20,transparent 75%)}
+.bmm-v04 .wrap{max-width:1280px}
+.bmm-v04 .top{position:sticky;top:0;z-index:40;background:#090e1ef0;border-bottom:1px solid #35426a70;box-shadow:0 12px 40px #0002}
+.bmm-v04 .nav{min-height:82px;height:auto;padding-top:13px;padding-bottom:13px;justify-content:initial;gap:32px}
+.bmm-v04 .brand{display:inline-flex;align-items:center;font-size:23px;font-weight:900;flex-shrink:0;letter-spacing:-.9px}
+.bmm-v04 .brand-mark{display:grid;place-items:center;width:39px;height:39px;border:1px solid #6378d4;border-radius:12px;background:linear-gradient(140deg,#1d4f9c,#422c8b);box-shadow:0 0 24px #425ae540;font-size:20px;margin-right:11px}
+.bmm-v04 .brand-word>span{color:#ad8aff}
+.bmm-v04 .links{align-items:center;gap:25px;flex:1;min-width:0}
+.bmm-v04 .links>a,.bmm-v04 .models-menu-label{font-size:14px;font-weight:650;white-space:nowrap;padding:11px 0}
+.bmm-v04 .models-menu{align-items:center}
+.bmm-v04 .models-submenu{top:calc(100% - 1px);padding:9px;min-width:205px;background:#111a31;border-color:#40558a;box-shadow:0 18px 50px #0009}
+.bmm-v04 .nav-account{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-shrink:0}
+.bmm-v04 .nav-cta{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:10px 14px;background:#131e38;border:1px solid #344a77;border-radius:10px;font-size:12px;font-weight:700}
+.bmm-v04 .nav-admin,.bmm-v04 .nav-register{background:linear-gradient(120deg,#326ee9,#7546d7);border-color:#7b6ee9;color:white}
+.bmm-v04 .nav-username{font-size:12px;color:#aab8dc;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px}
+.bmm-v04 .logout-form{margin:0}
+.bmm-v04 .nav-logout{background:transparent;border:0;color:#a8b6d3;cursor:pointer;font:inherit;font-size:12px;padding:9px}
+.bmm-v04 .promo-strip{padding:0;background:linear-gradient(105deg,#163d90,#4831a2 57%,#7833a4);border-bottom:1px solid #a8a3ff38}
+.bmm-v04 .promo-inner{max-width:1280px;margin:auto;min-height:48px;padding:8px 24px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.bmm-v04 .promo-spark{font-size:10px;font-weight:900;letter-spacing:1.3px;color:#d5caff;white-space:nowrap}
+.bmm-v04 .promo-message{font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.bmm-v04 .promo-code{font-size:11px;padding:5px 10px;border-radius:8px}
+.bmm-v04 .promo-copy{font-size:11px;padding:7px 12px;border-radius:8px}
+.bmm-v04 .hero{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(330px,.84fr);align-items:center;gap:20px;min-height:600px;padding-top:85px;padding-bottom:80px;overflow:visible}
+.bmm-v04 .hero-content{position:relative;z-index:2}
+.bmm-v04 .eyebrow{font-size:10px;letter-spacing:1.5px;padding:9px 14px}
+.bmm-v04 .hero h1{max-width:790px;font-size:clamp(46px,5.5vw,76px);letter-spacing:-3.3px;line-height:1.08;margin:26px 0}
+.bmm-v04 .hero p{max-width:630px;font-size:16px;line-height:1.85}
+.bmm-v04 .hero-footnote{display:flex;gap:22px;flex-wrap:wrap;margin-top:35px;color:#98a9cd;font-size:11px}
+.bmm-v04 .hero-footnote span::first-letter{color:#957bff}
+.bmm-v04 .hero-showcase{height:420px;position:relative;display:grid;place-items:center;isolation:isolate}
+.bmm-v04 .hero-showcase:before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,#5541d665,transparent 70%);filter:blur(25px)}
+.bmm-v04 .showcase-orbit{position:absolute;border:1px solid #6371d750;border-radius:38px;transform:rotate(-23deg)}
+.bmm-v04 .orbit-one{width:315px;height:315px}
+.bmm-v04 .orbit-two{width:380px;height:245px;transform:rotate(31deg)}
+.bmm-v04 .showcase-cube{position:relative;width:240px;height:240px;display:flex;align-items:center;justify-content:center;flex-direction:column;border:1px solid #7889ff99;border-radius:46px;background:linear-gradient(135deg,#1e4d9b,#2b266d 55%,#6331a3);box-shadow:25px 28px 75px #0008,inset 0 2px 35px #afc3ff28,0 0 70px #6749f055;transform:rotate(-13deg)}
+.bmm-v04 .showcase-cube span{font-size:96px;color:#b2baff;text-shadow:0 0 35px #b1a6ff}
+.bmm-v04 .showcase-cube strong{font-size:30px;letter-spacing:9px;color:#e8e7ff;transform:rotate(13deg)}
+.bmm-v04 .showcase-chip{position:absolute;z-index:2;padding:10px 14px;border:1px solid #566ca0;border-radius:10px;background:#111a32e8;box-shadow:0 14px 30px #0006;color:#c7d6ff;font-size:10px;letter-spacing:1px;font-weight:800}
+.bmm-v04 .chip-top{top:30px;right:0}.bmm-v04 .chip-bottom{bottom:25px;left:5px}
+.bmm-v04 .trust{background:#101a30;border-color:#30446e;padding:22px 16px;justify-content:space-around}
+.bmm-v04 .trust span{display:flex;align-items:center;gap:12px;font-weight:650}
+.bmm-v04 .trust b{color:#9c83ff;font-size:12px}
+.bmm-v04 .section{padding-top:100px}
+.bmm-v04 .section-head h2{font-size:clamp(28px,3.4vw,42px)}
+.bmm-v04 .section-head h2 em,.bmm-v04 .cta-panel h2 em{font-style:normal;color:#ac8dff}
+.bmm-v04 .section-head p{color:#94a5c6;margin:7px 0 0;font-size:14px}
+.bmm-v04 .category{background:linear-gradient(145deg,#18243e,#101729);min-height:188px;border-color:#2a3a5d;padding:26px;box-shadow:0 12px 32px #0002}
+.bmm-v04 .category:hover{background:linear-gradient(145deg,#1d2c4c,#171c37);border-color:#8673e7}
+.bmm-v04 .category-icon{display:grid;place-items:center;width:50px;height:50px;border-radius:13px;background:#29336b7a;border:1px solid #5553a07a;font-size:26px}
+.bmm-v04 .featured-section{padding-bottom:35px}
+.bmm-v04 .cta-panel{background:radial-gradient(ellipse at 50% 110%,#46307c,#131d35 72%);border-color:#6254a3}
+.bmm-v04 .footer{align-items:center}
+.bmm-v04 .footer-brand{font-size:19px}
+.bmm-v04 .footer-brand .brand-mark{width:31px;height:31px;font-size:15px}
+.bmm-v04 .footer-links{display:flex;gap:22px}
+.bmm-v04 .footer-links a:hover{color:white}
+@media(max-width:1100px){.bmm-v04 .nav{gap:15px}.bmm-v04 .brand{font-size:19px}.bmm-v04 .links{gap:14px}.bmm-v04 .nav-account{gap:5px}.bmm-v04 .nav-cta{padding:9px 10px}.bmm-v04 .nav-username{max-width:75px}}
+@media(max-width:850px){.bmm-v04 .nav{flex-wrap:wrap;justify-content:space-between}.bmm-v04 .links{display:flex;order:3;flex-basis:100%;justify-content:center;border-top:1px solid #34405c66;padding-top:7px}.bmm-v04 .nav-account{margin-left:auto}.bmm-v04 .hero{grid-template-columns:1fr;min-height:0;padding-top:70px;padding-bottom:55px}.bmm-v04 .hero-showcase{height:310px}.bmm-v04 .showcase-cube{width:190px;height:190px;border-radius:36px}.bmm-v04 .showcase-cube span{font-size:70px}.bmm-v04 .orbit-one{width:245px;height:245px}.bmm-v04 .orbit-two{width:300px;height:200px}.bmm-v04 .chip-top{right:12%}.bmm-v04 .chip-bottom{left:12%}}
+@media(max-width:560px){.bmm-v04 .nav{gap:9px}.bmm-v04 .brand{font-size:17px}.bmm-v04 .brand-mark{width:32px;height:32px;margin-right:7px}.bmm-v04 .nav-account{gap:3px}.bmm-v04 .nav-cta{font-size:11px;padding:7px 8px}.bmm-v04 .nav-library{display:none}.bmm-v04 .nav-username{display:none}.bmm-v04 .links{justify-content:space-around;gap:10px}.bmm-v04 .hero h1{font-size:clamp(39px,10vw,53px);letter-spacing:-2px}.bmm-v04 .hero p{font-size:15px}.bmm-v04 .hero-showcase{height:250px}.bmm-v04 .showcase-cube{width:155px;height:155px;border-radius:30px}.bmm-v04 .showcase-cube span{font-size:53px}.bmm-v04 .showcase-cube strong{font-size:21px}.bmm-v04 .orbit-one{width:205px;height:205px}.bmm-v04 .orbit-two{width:250px;height:160px}.bmm-v04 .showcase-chip{font-size:8px;padding:8px}.bmm-v04 .chip-top{top:5px;right:0}.bmm-v04 .chip-bottom{bottom:0;left:0}.bmm-v04 .promo-inner{gap:7px;padding:8px 12px}.bmm-v04 .trust{align-items:flex-start}.bmm-v04 .footer-links{flex-wrap:wrap;gap:12px}}
