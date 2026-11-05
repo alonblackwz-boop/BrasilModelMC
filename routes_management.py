@@ -1,0 +1,116 @@
+"""Gerenciamento administrativo de modelos e categorias, com validação no servidor."""
+from decimal import Decimal, InvalidOperation
+from flask import Blueprint, request, jsonify, abort, render_template
+from flask_login import login_required, current_user
+from sqlalchemy.exc import IntegrityError
+from models import db, Model3D, Category
+
+management_bp = Blueprint("management", __name__, url_prefix="/admin")
+
+def require_admin():
+    if current_user.role != "admin":
+        abort(403)
+
+def as_model(model):
+    return {"id": model.id, "title": model.title, "description": model.description,
+            "price_cents": model.price_cents, "status": model.status,
+            "category_id": model.category_id, "cover_path": model.cover_path}
+
+def validated(data, model):
+    title = str(data.get("title", model.title or "")).strip()
+    description = str(data.get("description", model.description or "")).strip()
+    if not 3 <= len(title) <= 180 or len(description) > 10000:
+        abort(400, "Título ou descrição inválidos")
+    try:
+        price = int(data.get("price_cents", model.price_cents))
+    except (ValueError, TypeError):
+        abort(400, "Preço inválido")
+    if price < 0 or price > 100000000:
+        abort(400, "Preço fora do limite")
+    status = str(data.get("status", model.status))
+    if status not in ("draft", "published", "archived"):
+        abort(400, "Status inválido")
+    category_id = data.get("category_id", model.category_id)
+    if category_id not in (None, ""):
+        try:
+            category_id = int(category_id)
+        except (TypeError, ValueError):
+            abort(400, "Categoria inválida")
+        if db.session.get(Category, category_id) is None:
+            abort(400, "Categoria inexistente")
+    else:
+        category_id = None
+    cover = str(data.get("cover_path", model.cover_path or "")).strip()
+    if cover and (not cover.startswith("https://") or len(cover) > 500):
+        abort(400, "A capa deve ser uma URL HTTPS")
+    model.title, model.description = title, description
+    model.price_cents, model.status = price, status
+    model.category_id, model.cover_path = category_id, cover or None
+
+@management_bp.get("")
+@login_required
+def panel():
+    require_admin()
+    return render_template("admin_panel.html")
+
+@management_bp.get("/api/models")
+@login_required
+def list_models():
+    require_admin()
+    rows = Model3D.query.order_by(Model3D.id.desc()).limit(200).all()
+    return jsonify([as_model(row) for row in rows])
+
+@management_bp.post("/api/models")
+@login_required
+def create_model():
+    require_admin()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        abort(400)
+    model = Model3D(seller_id=current_user.id, title="", description="",
+                    price_cents=0, status="draft")
+    validated(data, model)
+    db.session.add(model)
+    db.session.commit()
+    return jsonify(as_model(model)), 201
+
+@management_bp.patch("/api/models/<int:model_id>")
+@login_required
+def update_model(model_id):
+    require_admin()
+    model = db.session.get(Model3D, model_id)
+    if model is None:
+        abort(404)
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        abort(400)
+    validated(data, model)
+    db.session.commit()
+    return jsonify(as_model(model))
+
+@management_bp.get("/api/categories")
+@login_required
+def list_categories():
+    require_admin()
+    return jsonify([{"id": c.id, "name": c.name, "slug": c.slug}
+                    for c in Category.query.order_by(Category.name).all()])
+
+@management_bp.post("/api/categories")
+@login_required
+def create_category():
+    require_admin()
+    data = request.get_json(silent=True) or {}
+    name = str(data.get("name", "")).strip()
+    slug = str(data.get("slug", "")).strip().lower()
+    if not 2 <= len(name) <= 100 or not 2 <= len(slug) <= 120 or not all(
+        ch.isascii() and (ch.islower() or ch.isdigit() or ch == "-") for ch in slug
+    ):
+        abort(400, "Nome ou slug inválido")
+    category = Category(name=name, slug=slug)
+    db.session.add(category)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        abort(409, "Categoria já existe")
+    return jsonify({"id": category.id, "name": name, "slug": slug}), 201
