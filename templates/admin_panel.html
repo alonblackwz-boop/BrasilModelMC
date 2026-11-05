@@ -11,7 +11,7 @@
 <label>Descrição <textarea name="description" maxlength="10000"></textarea></label>
 <label>Preço em centavos <input name="price_cents" type="number" min="0" max="100000000" value="0" required></label>
 <label>URL HTTPS da capa <input name="cover_path" type="url" placeholder="https://..."></label>
-<label>Status <select name="status"><option value="draft">Rascunho</option><option value="published">Publicado</option></select></label>
+<input type="hidden" name="status" value="draft"><p>O modelo será criado como rascunho. Envie o arquivo antes de publicar.</p>
 <button class="btn" type="submit">Criar modelo</button>
 </form>
 <p id="message" role="status"></p>
