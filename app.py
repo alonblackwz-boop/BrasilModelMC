@@ -57,6 +57,11 @@ def create_app(test_config=None):
     csrf.init_app(app)
     csrf.exempt(paghiper_bp)
 
+    @app.context_processor
+    def inject_promotion():
+        from routes_coupons import active_promotion
+        return {"active_promotion": active_promotion()}
+
     @app.get("/")
     def index():
         models = Model3D.query.filter_by(status="published").order_by(Model3D.created_at.desc()).limit(6).all()
