@@ -1,6 +1,7 @@
 """Biblioteca privada e downloads autorizados de modelos adquiridos."""
 from pathlib import Path
 from flask import Blueprint, current_app, abort, jsonify, send_file, render_template
+from sqlalchemy import and_, or_
 from flask_login import current_user, login_required
 from models import db, Model3D, Purchase
 
@@ -12,7 +13,7 @@ def owned_models(user_id):
     )
     return Model3D.query.filter(
         Model3D.file_path.isnot(None),
-        (Model3D.price_cents == 0) & (Model3D.status == "published") | Model3D.id.in_(paid_ids)
+        or_(and_(Model3D.price_cents == 0, Model3D.status == "published"), Model3D.id.in_(paid_ids))
     )
 
 @library_bp.get("/api/library")
