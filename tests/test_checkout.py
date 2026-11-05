@@ -39,6 +39,13 @@ class CheckoutTest(unittest.TestCase):
             sess["_user_id"] = str(user_id)
             sess["_fresh"] = True
 
+    def test_missing_file_prevents_checkout(self):
+        self.login(self.buyer_id)
+        Path(self.temp.name, "test.bbmodel").unlink()
+        response = self.client.post(f"/api/checkout/model/{self.model_id}")
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(Purchase.query.count(), 0)
+
     def test_checkout_requires_login(self):
         response = self.client.post(f"/api/checkout/model/{self.model_id}")
         self.assertNotEqual(response.status_code, 201)
