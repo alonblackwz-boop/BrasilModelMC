@@ -18,7 +18,7 @@ class CheckoutTest(unittest.TestCase):
         db.session.flush()
         self.buyer_id, self.other_id = buyer.id, other.id
         model = Model3D(seller_id=seller.id, title="Helicóptero",
-                        description="Modelo", price_cents=2990, status="published")
+                        description="Modelo", price_cents=2990, status="published", file_path="test.bbmodel")
         db.session.add(model)
         db.session.commit()
         self.model_id = model.id
@@ -53,7 +53,6 @@ class CheckoutTest(unittest.TestCase):
     def test_other_customer_cannot_read_order(self):
         self.login(self.buyer_id)
         order_id = self.client.post(f"/api/checkout/model/{self.model_id}").get_json()["order_id"]
-        self.client.post("/sair")
         self.login(self.other_id)
         response = self.client.get(f"/api/checkout/orders/{order_id}")
         self.assertEqual(response.status_code, 404)
