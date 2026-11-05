@@ -2,6 +2,7 @@
 {% block content %}
 <section style="max-width:700px;margin:3rem auto;padding:2rem;background:#121427;border:1px solid #3943a0;border-radius:18px">
   <h1>Pagamento Pix</h1>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <p>{{ model.title if model else 'Modelo' }} — R$ {{ '%.2f'|format(order.amount_cents / 100)|replace('.', ',') }}</p>
   <p id="status">Status: {{ order.status }}</p>
   <div id="payment" {% if order.status == 'paid' %}hidden{% endif %}>
