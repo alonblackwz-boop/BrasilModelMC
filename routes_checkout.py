@@ -18,6 +18,8 @@ def create_checkout(model_id):
         abort(404)
     if model.price_cents < 0:
         abort(409, "Preço inválido")
+    if not model.file_path:
+        return jsonify({"error": "Este modelo ainda não possui arquivo disponível."}), 409
     if model.price_cents == 0:
         return jsonify({"error": "Modelo gratuito: use o fluxo de aquisição gratuita."}), 409
     if model.price_cents < 300:
@@ -74,8 +76,8 @@ def issue_pix(order_id):
     if not 3 <= len(name) <= 120 or len(document) not in (11, 14):
         return jsonify({"error": "Dados do pagador inválidos"}), 400
     model = db.session.get(Model3D, order.model_id)
-    if model is None:
-        abort(404)
+    if model is None or not model.file_path:
+        return jsonify({"error": "Modelo sem arquivo para entrega."}), 409
     callback_url = os.environ.get("PAGHIPER_NOTIFICATION_URL", "")
     if not callback_url.startswith("https://"):
         return jsonify({"error": "Configure uma URL HTTPS para notificações"}), 503
