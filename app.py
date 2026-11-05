@@ -31,7 +31,9 @@ def create_app(test_config=None):
             raise RuntimeError("Configure SECRET_KEY no ambiente antes de iniciar.")
         app.config["SECRET_KEY"] = "testing-only-not-for-production"
     from routes_suggestions import suggestions_bp
+    from routes_reviews import reviews_bp
     app.register_blueprint(suggestions_bp)
+    app.register_blueprint(reviews_bp)
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
