@@ -51,7 +51,29 @@
          await load();
        } catch (err) { message.textContent = err.message; toggle.disabled = false; }
      });
-     item.append(title, info, toggle);
+     const upload = document.createElement('input');
+     upload.type = 'file';
+     upload.accept = '.zip,.bbmodel';
+     upload.setAttribute('aria-label', 'Arquivo do modelo ' + m.title);
+     const send = document.createElement('button');
+     send.className = 'btn secondary';
+     send.textContent = 'Enviar arquivo';
+     send.addEventListener('click', async () => {
+       if (!upload.files.length) { message.textContent = 'Selecione um arquivo ZIP ou BBMODEL'; return; }
+       send.disabled = true;
+       const form = new FormData();
+       form.append('file', upload.files[0]);
+       try {
+         const response = await fetch('/admin/api/models/' + m.id + '/upload', {
+           method:'POST', credentials:'same-origin',
+           headers:{'X-CSRFToken':token}, body:form
+         });
+         if (!response.ok) throw new Error('Falha no envio do arquivo');
+         message.textContent = 'Arquivo enviado para ' + m.title;
+       } catch (err) { message.textContent = err.message; }
+       finally { send.disabled = false; }
+     });
+     item.append(title, info, toggle, upload, send);
      area.append(item);
    }
  }
