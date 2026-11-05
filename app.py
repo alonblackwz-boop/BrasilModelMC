@@ -34,10 +34,12 @@ def create_app(test_config=None):
     from routes_reviews import reviews_bp
     from routes_auth import auth_bp
     from routes_coupons import coupons_bp
+    from routes_checkout import checkout_bp
     app.register_blueprint(suggestions_bp)
     app.register_blueprint(reviews_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(coupons_bp)
+    app.register_blueprint(checkout_bp)
     login_manager.login_view = "auth.login"
     db.init_app(app)
     login_manager.init_app(app)
