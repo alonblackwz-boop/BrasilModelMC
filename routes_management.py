@@ -51,7 +51,8 @@ def validated(data, model):
         from pathlib import Path
         from flask import current_app
         path = Path(current_app.config["PRIVATE_MODELS_DIR"]).resolve()
-        if not model.file_path or not (path / model.file_path).resolve().is_file():
+        candidate = (path / model.file_path).resolve() if model.file_path else path
+        if candidate == path or path not in candidate.parents or not candidate.is_file():
             abort(409, "Arquivo do modelo indisponível")
     model.title, model.description = title, description
     model.price_cents, model.status = price, status
