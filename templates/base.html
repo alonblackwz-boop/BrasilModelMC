@@ -1,1 +1,38 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080c19"><title>{% block title %}BrasilModelMC{% endblock %}</title><link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"></head><body><div class="ambient"></div>{% if active_promotion %}<aside class="promo-strip" aria-label="Promoção ativa"><span>✦ {{ active_promotion.message }} <strong>{{ active_promotion.discount_label }}</strong></span><span class="promo-code">{{ active_promotion.code }}</span><button type="button" class="promo-copy" data-promo-code="{{ active_promotion.code }}">Copiar cupom</button></aside>{% endif %}<header class="top"><div class="wrap nav"><a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">◆</span> Brasil<span>Model</span>MC</a><nav class="links"><a href="{{ url_for('index') }}">Início</a><div class="models-menu"><a href="{{ url_for('catalog') }}" class="models-menu-label">Models ▾</a><div class="models-submenu"><a href="{{ url_for('itemsadder_catalog') }}">ItemsAdder</a></div></div><a href="{{ url_for('catalog', price='free') }}">Gratuitos</a></nav>{% if current_user.is_authenticated %}<a class="nav-cta" href="{{ url_for('library.page') }}">Minha biblioteca</a>{% if current_user.role == "admin" %}<a class="nav-cta" href="{{ url_for('management.panel') }}">Administração</a>{% endif %}<span class="nav-cta">{{ current_user.username }}</span><form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="nav-cta" type="submit">Sair</button></form>{% else %}<a class="nav-cta" href="{{ url_for('auth.login') }}">Entrar</a><a class="nav-cta" href="{{ url_for('auth.register') }}">Criar conta</a>{% endif %}</div></header><main>{% block content %}{% endblock %}</main><footer><div class="wrap footer"><div><strong>◆ BrasilModelMC</strong><p>Modelos 3D para dar vida ao seu universo Minecraft.</p></div><div>Marketplace de models • Brasil</div></div></footer><script>document.querySelectorAll("[data-promo-code]").forEach(button=>button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(button.dataset.promoCode);button.textContent="Copiado!";}catch(e){button.textContent="Selecione o código acima";}}));</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070b17">
+<meta name="description" content="BrasilModelMC — Modelos customizados para Minecraft. Explore modelos 3D para ItemsAdder, criaturas, veículos e muito mais.">
+<title>{% block title %}BrasilModelMC — Modelos Customizados para Minecraft{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}?v=04">
+</head>
+<body class="bmm-v04">
+<div class="ambient" aria-hidden="true"></div>
+{% if active_promotion %}
+<aside class="promo-strip" aria-label="Promoção ativa">
+<div class="promo-inner"><span class="promo-spark">✦ OFERTA ESPECIAL</span><span class="promo-message">{{ active_promotion.message }} <strong>{{ active_promotion.discount_label }}</strong></span><span class="promo-code">{{ active_promotion.code }}</span><button type="button" class="promo-copy" data-promo-code="{{ active_promotion.code }}">Copiar código ↗</button></div>
+</aside>
+{% endif %}
+<header class="top"><div class="wrap nav">
+<a class="brand" href="{{ url_for('index') }}" aria-label="BrasilModelMC — início"><span class="brand-mark">◆</span><span class="brand-word">Brasil<span>Model</span>MC</span></a>
+<nav class="links" aria-label="Navegação principal">
+<a href="{{ url_for('index') }}">Início</a>
+<div class="models-menu"><a href="{{ url_for('catalog') }}" class="models-menu-label">Modelos <span aria-hidden="true">⌄</span></a><div class="models-submenu"><a href="{{ url_for('itemsadder_catalog') }}">◆ ItemsAdder</a><a href="{{ url_for('catalog') }}">Todos os modelos</a></div></div>
+<a href="{{ url_for('catalog', price='free') }}">Gratuitos</a>
+</nav>
+<div class="nav-account">
+{% if current_user.is_authenticated %}
+<a class="nav-cta nav-library" href="{{ url_for('library.page') }}">Minha biblioteca</a>
+{% if current_user.role == "admin" %}<a class="nav-cta nav-admin" href="{{ url_for('management.panel') }}">Painel admin</a>{% endif %}
+<span class="nav-username" title="Conta conectada">{{ current_user.username }}</span>
+<form method="post" action="{{ url_for('auth.logout') }}" class="logout-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="nav-logout" type="submit">Sair</button></form>
+{% else %}
+<a class="nav-cta nav-login" href="{{ url_for('auth.login') }}">Entrar</a><a class="nav-cta nav-register" href="{{ url_for('auth.register') }}">Criar conta ↗</a>
+{% endif %}
+</div>
+</div></header>
+<main>{% block content %}{% endblock %}</main>
+<footer><div class="wrap footer"><div><a class="brand footer-brand" href="{{ url_for('index') }}"><span class="brand-mark">◆</span><span class="brand-word">Brasil<span>Model</span>MC</span></a><p>Modelos customizados para Minecraft.</p></div><div class="footer-links"><a href="{{ url_for('catalog') }}">Catálogo</a><a href="{{ url_for('itemsadder_catalog') }}">ItemsAdder</a><a href="{{ url_for('catalog', price='free') }}">Gratuitos</a></div><span>© BrasilModelMC</span></div></footer>
+<script>document.querySelectorAll("[data-promo-code]").forEach(button=>button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(button.dataset.promoCode);button.textContent="✓ Código copiado";}catch(e){button.textContent="Copie o código exibido";}}));</script>
+</body></html>
