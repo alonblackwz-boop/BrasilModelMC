@@ -3,12 +3,20 @@
 Não cria cobranças reais sem configuração e integração validada com o provedor.
 Valores sempre são calculados no servidor a partir do modelo publicado.
 """
-from datetime import datetime, timezone
-from flask import Blueprint, abort, jsonify, render_template
+from flask import Blueprint, abort, jsonify, render_template, current_app
+from pathlib import Path
 from flask_login import current_user, login_required
 from models import db, Model3D, Purchase
 
 checkout_bp = Blueprint("checkout", __name__, url_prefix="/api/checkout")
+
+def deliverable(model):
+    if not model or not model.file_path:
+        return False
+    root = Path(current_app.config["PRIVATE_MODELS_DIR"]).resolve()
+    path = (root / model.file_path).resolve()
+    return path != root and root in path.parents and path.is_file()
+
 
 @checkout_bp.post("/model/<int:model_id>")
 @login_required
@@ -18,7 +26,7 @@ def create_checkout(model_id):
         abort(404)
     if model.price_cents < 0:
         abort(409, "Preço inválido")
-    if not model.file_path:
+    if not deliverable(model):
         return jsonify({"error": "Este modelo ainda não possui arquivo disponível."}), 409
     if model.price_cents == 0:
         return jsonify({"error": "Modelo gratuito: use o fluxo de aquisição gratuita."}), 409
@@ -56,8 +64,8 @@ def order_status(order_id):
 @login_required
 def issue_pix(order_id):
     import os
-    from flask import request, url_for
-    from models import PixPayment, User
+    from flask import request
+    from models import PixPayment
     from paghiper import create_pix, PagHiperError, configured
     order = db.session.get(Purchase, order_id)
     if order is None or order.buyer_id != current_user.id:
@@ -76,7 +84,7 @@ def issue_pix(order_id):
     if not 3 <= len(name) <= 120 or len(document) not in (11, 14):
         return jsonify({"error": "Dados do pagador inválidos"}), 400
     model = db.session.get(Model3D, order.model_id)
-    if model is None or not model.file_path:
+    if not deliverable(model):
         return jsonify({"error": "Modelo sem arquivo para entrega."}), 409
     callback_url = os.environ.get("PAGHIPER_NOTIFICATION_URL", "")
     if not callback_url.startswith("https://"):
