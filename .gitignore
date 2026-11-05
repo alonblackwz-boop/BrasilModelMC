@@ -26,3 +26,7 @@ static/covers/
 Thumbs.db
 .idea/
 .vscode/
+
+# Arquivos privados de modelos e dados da instância
+private_models/
+instance/
