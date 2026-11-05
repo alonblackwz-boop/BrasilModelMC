@@ -78,6 +78,8 @@ def create_model():
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         abort(400)
+    if data.get("status", "draft") != "draft":
+        abort(409, "Crie o modelo como rascunho e envie o arquivo antes de publicar")
     model = Model3D(seller_id=current_user.id, title="", description="",
                     price_cents=0, status="draft")
     validated(data, model)
