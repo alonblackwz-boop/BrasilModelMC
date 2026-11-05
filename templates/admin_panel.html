@@ -16,12 +16,70 @@
 </form>
 <p id="message" role="status"></p>
 </section>
+<section class="promo-admin">
+<h2>Faixa promocional e cupons</h2>
+<p>Cadastre um cupom e escolha qual promoção aparecerá no topo de todas as páginas.</p>
+<form id="coupon-form">
+<label>Código do cupom <input name="code" placeholder="BMC20" minlength="3" maxlength="50" required></label>
+<label>Tipo <select name="discount_type"><option value="percent">Percentual (%)</option><option value="fixed">Valor fixo (centavos)</option></select></label>
+<label>Valor <input name="discount_value" type="number" min="1" step="1" required></label>
+<label>Limite de usos (opcional) <input name="max_uses" type="number" min="1" step="1"></label>
+<button class="btn secondary" type="submit">Criar cupom</button>
+</form>
+<hr>
+<form id="promotion-form">
+<label>Cupom da faixa <select id="promo-coupon" name="coupon_id"><option value="">Selecione um cupom</option></select></label>
+<label>Mensagem <input name="message" maxlength="160" placeholder="Oferta especial em nossos modelos!"></label>
+<label><input name="enabled" type="checkbox"> Exibir faixa promocional</label>
+<button class="btn" type="submit">Salvar promoção</button>
+</form>
+<p id="promo-message" role="status"></p>
+</section>
 <h2>Modelos cadastrados</h2>
 <div id="models" aria-live="polite"></div>
 </section>
 <script>
 (() => {
  const token = {{ csrf_token()|tojson }};
+ const promoMsg = document.getElementById('promo-message');
+ async function loadCoupons() {
+   const res = await fetch('/api/coupons/admin', {credentials:'same-origin'});
+   if (!res.ok) { promoMsg.textContent = 'Falha ao carregar cupons'; return; }
+   const data = await res.json();
+   const select = document.getElementById('promo-coupon');
+   select.replaceChildren(new Option('Selecione um cupom', ''));
+   data.coupons.forEach(c => select.add(new Option(c.code + ' (' + (c.discount_type === 'percent' ? c.discount_value + '%' : 'R$ ' + (c.discount_value/100).toFixed(2)) + ')', String(c.id))));
+   select.value = String(data.promotion.coupon_id || '');
+   const form = document.getElementById('promotion-form');
+   form.elements.message.value = data.promotion.message;
+   form.elements.enabled.checked = data.promotion.enabled;
+ }
+ document.getElementById('coupon-form').addEventListener('submit', async event => {
+   event.preventDefault();
+   const form = event.target;
+   const data = Object.fromEntries(new FormData(form));
+   data.discount_value = Number(data.discount_value);
+   data.max_uses = data.max_uses ? Number(data.max_uses) : null;
+   try {
+     const res = await fetch('/api/coupons/admin', {method:'POST',credentials:'same-origin',
+       headers:{'Content-Type':'application/json','X-CSRFToken':token},body:JSON.stringify(data)});
+     if (!res.ok) throw new Error('Não foi possível criar o cupom. Confira os dados e o código.');
+     promoMsg.textContent = 'Cupom criado com sucesso'; form.reset(); await loadCoupons();
+   } catch(e) {promoMsg.textContent=e.message;}
+ });
+ document.getElementById('promotion-form').addEventListener('submit', async event => {
+   event.preventDefault();
+   const form = event.target;
+   const data = {coupon_id:form.elements.coupon_id.value ? Number(form.elements.coupon_id.value) : null,
+     message:form.elements.message.value,enabled:form.elements.enabled.checked};
+   try {
+     const res = await fetch('/api/coupons/admin/promotion', {method:'PUT',credentials:'same-origin',
+       headers:{'Content-Type':'application/json','X-CSRFToken':token},body:JSON.stringify(data)});
+     if (!res.ok) throw new Error('Falha ao salvar. Escolha um cupom válido.');
+     promoMsg.textContent = 'Faixa promocional atualizada';
+   } catch(e) {promoMsg.textContent=e.message;}
+ });
+ loadCoupons();
  const area = document.getElementById('models');
  const message = document.getElementById('message');
  async function load() {
