@@ -1,9 +1,9 @@
 import os
-from pathlib import Path
-from flask import Flask, jsonify
+from flask import Flask, render_template, request
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
-from models import db, User
+from sqlalchemy import or_
+from models import db, User, Model3D, Category
 
 login_manager = LoginManager()
 csrf = CSRFProtect()
@@ -36,14 +36,38 @@ def create_app(test_config=None):
 
     @app.get("/")
     def index():
-        return jsonify(name="BrasilModelMC", version="0.3.0-dev", status="em desenvolvimento")
+        models = Model3D.query.filter_by(status="published").order_by(Model3D.created_at.desc()).limit(6).all()
+        return render_template("index.html", models=models)
+
+    @app.get("/modelos")
+    def catalog():
+        query = request.args.get("q", "").strip()[:100]
+        price = request.args.get("price", "")
+        selected_category = request.args.get("category", "")
+        stmt = Model3D.query.filter_by(status="published")
+        if query:
+            stmt = stmt.filter(or_(Model3D.title.ilike(f"%{query}%"), Model3D.description.ilike(f"%{query}%")))
+        if selected_category.isdigit():
+            stmt = stmt.filter_by(category_id=int(selected_category))
+        if price == "free":
+            stmt = stmt.filter_by(price_cents=0)
+        elif price == "paid":
+            stmt = stmt.filter(Model3D.price_cents > 0)
+        models = stmt.order_by(Model3D.created_at.desc()).limit(60).all()
+        return render_template("catalog.html", models=models, categories=Category.query.order_by(Category.name).all(), query=query, price=price, selected_category=selected_category)
+
+    @app.get("/modelo/<int:model_id>")
+    def model_detail(model_id):
+        model = Model3D.query.filter_by(id=model_id, status="published").first_or_404()
+        return render_template("detail.html", model=model)
 
     @app.get("/health")
     def health():
-        return jsonify(status="ok")
+        return {"status": "ok"}
 
     with app.app_context():
         db.create_all()
     return app
 
-app = create_app()
+if __name__ == "__main__":
+    create_app().run()
