@@ -2,6 +2,7 @@
 import unittest
 import tempfile
 from pathlib import Path
+from flask import g
 from app import create_app
 from models import db, User, Model3D, Purchase
 
@@ -38,6 +39,7 @@ class CheckoutTest(unittest.TestCase):
         with self.client.session_transaction() as sess:
             sess["_user_id"] = str(user_id)
             sess["_fresh"] = True
+        g.pop("_login_user", None)
 
     def test_missing_file_prevents_checkout(self):
         self.login(self.buyer_id)
