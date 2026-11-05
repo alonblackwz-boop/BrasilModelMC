@@ -1,11 +1,35 @@
-{% extends "base.html" %}{% block title %}{{ "Entrar" if mode == "login" else "Criar conta" }} — BrasilModelMC{% endblock %}
-{% block content %}<section class="wrap section" style="max-width:540px"><div class="cta-panel">
-<span class="kicker">SUA CONTA</span><h1>{{ "Entrar" if mode == "login" else "Criar conta" }}</h1>
-{% for category,message in get_flashed_messages(with_categories=true) %}<p role="alert">{{ message }}</p>{% endfor %}
-<form method="post" class="auth-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-{% if mode == "register" %}<label>Nome de usuário<input name="username" autocomplete="username" minlength="3" maxlength="60" required></label>{% endif %}
-<label>E-mail<input type="email" name="{{ 'identifier' if mode == 'login' else 'email' }}" autocomplete="email" required></label>
-<label>Senha<input type="password" name="password" autocomplete="{{ 'current-password' if mode == 'login' else 'new-password' }}" minlength="{{ 1 if mode == 'login' else 12 }}" required></label>
-<button class="btn primary" type="submit">{{ "Entrar" if mode == "login" else "Cadastrar" }}</button></form>
-<p>{% if mode == "login" %}Não tem conta? <a href="{{ url_for('auth.register') }}">Cadastre-se</a>{% else %}Já tem conta? <a href="{{ url_for('auth.login') }}">Entre aqui</a>{% endif %}</p>
-</div></section>{% endblock %}
+{% extends "base.html" %}
+{% block title %}{{ "Entrar" if mode == "login" else "Criar conta" }} — BrasilModelMC{% endblock %}
+{% block content %}
+<section class="wrap auth-page">
+  <div class="auth-card">
+    <span class="kicker">SUA CONTA</span>
+    <h1>{{ "Entrar" if mode == "login" else "Criar conta" }}</h1>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <p class="auth-error" role="alert">{{ message }}</p>
+    {% endfor %}
+    <form method="post" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if mode == "register" %}
+      <label for="auth-username">Nome de usuário
+        <input id="auth-username" name="username" type="text" autocomplete="username" minlength="3" maxlength="60" required>
+      </label>
+      {% endif %}
+      <label for="auth-email">E-mail
+        <input id="auth-email" type="email" name="{{ 'identifier' if mode == 'login' else 'email' }}" autocomplete="email" required>
+      </label>
+      <label for="auth-password">Senha
+        <input id="auth-password" type="password" name="password" autocomplete="{{ 'current-password' if mode == 'login' else 'new-password' }}" minlength="{{ 1 if mode == 'login' else 12 }}" required>
+      </label>
+      <button class="btn primary" type="submit">{{ "Entrar" if mode == "login" else "Criar conta" }}</button>
+    </form>
+    <p class="auth-switch">
+      {% if mode == "login" %}
+        Não tem conta? <a href="{{ url_for('auth.register') }}">Cadastre-se</a>
+      {% else %}
+        Já tem conta? <a href="{{ url_for('auth.login') }}">Entre aqui</a>
+      {% endif %}
+    </p>
+  </div>
+</section>
+{% endblock %}
