@@ -1,5 +1,4 @@
 """Gerenciamento administrativo de modelos e categorias, com validação no servidor."""
-from decimal import Decimal, InvalidOperation
 from flask import Blueprint, request, jsonify, abort, render_template
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
@@ -43,6 +42,8 @@ def validated(data, model):
     cover = str(data.get("cover_path", model.cover_path or "")).strip()
     if cover and (not cover.startswith("https://") or len(cover) > 500):
         abort(400, "A capa deve ser uma URL HTTPS")
+    if status == "published" and not model.file_path:
+        abort(409, "Envie o arquivo do modelo antes de publicar")
     model.title, model.description = title, description
     model.price_cents, model.status = price, status
     model.category_id, model.cover_path = category_id, cover or None
@@ -123,8 +124,7 @@ def upload_model_file(model_id):
     import secrets
     from pathlib import Path
     from flask import current_app
-    from werkzeug.utils import secure_filename
-    require_admin()
+        require_admin()
     model = db.session.get(Model3D, model_id)
     if model is None:
         abort(404)
@@ -155,8 +155,7 @@ def upload_model_file(model_id):
                 out.write(chunk)
         if total == 0:
             abort(400, "Arquivo vazio")
-        previous = model.file_path
-        model.file_path = filename
+            model.file_path = filename
         db.session.commit()
     except Exception:
         db.session.rollback()
