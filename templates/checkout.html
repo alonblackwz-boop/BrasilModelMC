@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<section style="max-width:700px;margin:3rem auto;padding:2rem;background:#121427;border:1px solid #3943a0;border-radius:18px">
+  <h1>Pagamento Pix</h1>
+  <p>{{ model.title if model else 'Modelo' }} — R$ {{ '%.2f'|format(order.amount_cents / 100)|replace('.', ',') }}</p>
+  <p id="status">Status: {{ order.status }}</p>
+  <div id="payment" {% if order.status == 'paid' %}hidden{% endif %}>
+    <label for="payer_name">Nome do pagador</label>
+    <input id="payer_name" autocomplete="name" maxlength="120" required>
+    <label for="payer_document">CPF ou CNPJ do pagador</label>
+    <input id="payer_document" inputmode="numeric" maxlength="18" required>
+    <button type="button" id="generate">Gerar Pix</button>
+    <p id="message" role="status"></p>
+    <img id="qr" alt="QR Code Pix" style="display:none;max-width:260px;width:100%">
+    <textarea id="code" readonly rows="4" style="display:none;width:100%"></textarea>
+    <button type="button" id="copy" style="display:none">Copiar Pix</button>
+  </div>
+  <a id="library" href="/api/library" {% if order.status != 'paid' %}hidden{% endif %}>Abrir minha biblioteca</a>
+</section>
+<script>
+(() => {
+  const id = {{ order.id|tojson }};
+  const $ = key => document.getElementById(key);
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+  async function post(url, data) {
+    const headers = {'Content-Type':'application/json'};
+    if (csrf) headers['X-CSRFToken'] = csrf;
+    const res = await fetch(url, {method:'POST', credentials:'same-origin', headers, body:JSON.stringify(data)});
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.error || 'Falha ao solicitar Pix');
+    return json;
+  }
+  $('generate').addEventListener('click', async () => {
+    $('generate').disabled = true;
+    $('message').textContent = 'Solicitando Pix...';
+    try {
+      const data = await post('/api/checkout/orders/' + id + '/pix', {
+        payer_name:$('payer_name').value,
+        payer_cpf_cnpj:$('payer_document').value
+      });
+      $('code').value = data.pix_code || '';
+      $('code').style.display = 'block';
+      $('copy').style.display = 'inline-block';
+      if (data.qr_image_url && data.qr_image_url.startsWith('https://pix.paghiper.com/')) {
+        $('qr').src = data.qr_image_url;
+        $('qr').style.display = 'block';
+      }
+      $('message').textContent = 'Pix gerado. Aguardando confirmação.';
+    } catch (err) { $('message').textContent = err.message; }
+    finally { $('generate').disabled = false; }
+  });
+  $('copy').addEventListener('click', () => navigator.clipboard.writeText($('code').value));
+  async function refresh() {
+    try {
+      const response = await fetch('/api/checkout/orders/' + id, {credentials:'same-origin'});
+      if (!response.ok) return;
+      const data = await response.json();
+      $('status').textContent = 'Status: ' + data.status;
+      if (data.status === 'paid') {
+        $('payment').hidden = true;
+        $('library').hidden = false;
+      }
+    } catch (_) {}
+  }
+  setInterval(refresh, 12000);
+})();
+</script>
+{% endblock %}
