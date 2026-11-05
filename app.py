@@ -79,6 +79,13 @@ def create_app(test_config=None):
         models = stmt.order_by(Model3D.created_at.desc()).limit(60).all()
         return render_template("catalog.html", models=models, categories=Category.query.order_by(Category.name).all(), query=query, price=price, selected_category=selected_category)
 
+    @app.get("/models/itemsadder")
+    def itemsadder_catalog():
+        models = (Model3D.query.join(Category, Model3D.category_id == Category.id)
+                  .filter(Model3D.status == "published", Category.name.ilike("ItemsAdder"))
+                  .order_by(Model3D.created_at.desc()).limit(60).all())
+        return render_template("itemsadder.html", models=models)
+
     @app.get("/modelo/<int:model_id>")
     def model_detail(model_id):
         model = Model3D.query.filter_by(id=model_id, status="published").first_or_404()
