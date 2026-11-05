@@ -55,6 +55,13 @@ class ManagementTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(db.session.get(Model3D, model_id).status, "published")
 
+    def test_fractional_and_boolean_prices_rejected(self):
+        self.login(self.admin_id)
+        for value in (1.5, True, "19.99", "2e3"):
+            with self.subTest(value=value):
+                response = self.client.post("/admin/api/models", json={"title": "Teste", "price_cents": value})
+                self.assertEqual(response.status_code, 400)
+
     def test_invalid_price_rejected(self):
         self.login(self.admin_id)
         response = self.client.post("/admin/api/models", json={"title": "Teste", "price_cents": -1})
