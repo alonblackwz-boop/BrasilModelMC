@@ -28,14 +28,13 @@ def list_library():
 @login_required
 def download(model_id):
     model = db.session.get(Model3D, model_id)
-    if model is None or (model.status != "published" and model.price_cents == 0):
+    if model is None:
         abort(404)
-    if model.price_cents > 0:
-        paid = Purchase.query.filter_by(
-            buyer_id=current_user.id, model_id=model_id, status="paid"
-        ).first()
-        if paid is None:
-            abort(403)
+    paid = Purchase.query.filter_by(
+        buyer_id=current_user.id, model_id=model_id, status="paid"
+    ).first()
+    if paid is None and not (model.price_cents == 0 and model.status == "published"):
+        abort(403)
     if not model.file_path:
         abort(404, "Arquivo indisponível")
     root = Path(current_app.config.get("PRIVATE_MODELS_DIR", "private_models")).resolve()
