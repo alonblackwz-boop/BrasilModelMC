@@ -2,6 +2,7 @@
 import io
 import tempfile
 import unittest
+from flask import g
 from app import create_app
 from models import db, User, Model3D, Purchase
 
@@ -40,6 +41,7 @@ class FilesTest(unittest.TestCase):
         with self.client.session_transaction() as session:
             session["_user_id"] = str(user_id)
             session["_fresh"] = True
+        g.pop("_login_user", None)
 
     def test_upload_and_paid_download(self):
         self.login(self.admin_id)
