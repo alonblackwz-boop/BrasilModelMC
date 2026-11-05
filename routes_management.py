@@ -114,3 +114,53 @@ def create_category():
         db.session.rollback()
         abort(409, "Categoria já existe")
     return jsonify({"id": category.id, "name": name, "slug": slug}), 201
+
+@management_bp.post("/api/models/<int:model_id>/upload")
+@login_required
+def upload_model_file(model_id):
+    """Upload ZIP/BBMODEL para armazenamento fora da pasta static."""
+    import os
+    import secrets
+    from pathlib import Path
+    from flask import current_app
+    from werkzeug.utils import secure_filename
+    require_admin()
+    model = db.session.get(Model3D, model_id)
+    if model is None:
+        abort(404)
+    file = request.files.get("file")
+    if not file or not file.filename:
+        abort(400, "Selecione um arquivo")
+    extension = Path(file.filename).suffix.lower()
+    if extension not in {".zip", ".bbmodel"}:
+        abort(400, "Apenas ZIP ou BBMODEL")
+    max_bytes = 50 * 1024 * 1024
+    # O servidor também limita o corpo HTTP para evitar uploads excessivos.
+    if request.content_length is not None and request.content_length > max_bytes + 1024 * 1024:
+        abort(413)
+    root = Path(current_app.config["PRIVATE_MODELS_DIR"]).resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    filename = secrets.token_hex(20) + extension
+    destination = root / filename
+    try:
+        with destination.open("xb") as out:
+            total = 0
+            while True:
+                chunk = file.stream.read(1024 * 1024)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > max_bytes:
+                    abort(413, "Arquivo muito grande")
+                out.write(chunk)
+        if total == 0:
+            abort(400, "Arquivo vazio")
+        previous = model.file_path
+        model.file_path = filename
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        destination.unlink(missing_ok=True)
+        raise
+    # Não excluir o arquivo anterior: pedidos históricos podem precisar de auditoria.
+    return jsonify({"id": model.id, "file_ready": True, "size_bytes": total}), 201
