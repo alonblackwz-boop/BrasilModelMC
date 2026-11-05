@@ -20,8 +20,11 @@ def validated(data, model):
     description = str(data.get("description", model.description or "")).strip()
     if not 3 <= len(title) <= 180 or len(description) > 10000:
         abort(400, "Título ou descrição inválidos")
+    raw_price = data.get("price_cents", model.price_cents)
+    if isinstance(raw_price, bool) or not (isinstance(raw_price, int) or (isinstance(raw_price, str) and raw_price.isascii() and raw_price.isdecimal())):
+        abort(400, "Preço deve ser um número inteiro de centavos")
     try:
-        price = int(data.get("price_cents", model.price_cents))
+        price = int(raw_price)
     except (ValueError, TypeError):
         abort(400, "Preço inválido")
     if price < 0 or price > 100000000:
@@ -44,6 +47,12 @@ def validated(data, model):
         abort(400, "A capa deve ser uma URL HTTPS")
     if status == "published" and not model.file_path:
         abort(409, "Envie o arquivo do modelo antes de publicar")
+    if model.id is not None and status == "published" and price > 0:
+        from pathlib import Path
+        from flask import current_app
+        path = Path(current_app.config["PRIVATE_MODELS_DIR"]).resolve()
+        if not model.file_path or not (path / model.file_path).resolve().is_file():
+            abort(409, "Arquivo do modelo indisponível")
     model.title, model.description = title, description
     model.price_cents, model.status = price, status
     model.category_id, model.cover_path = category_id, cover or None
