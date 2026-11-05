@@ -92,3 +92,12 @@ class Suggestion(db.Model):
 class Setting(db.Model):
     key = db.Column(db.String(100), primary_key=True)
     value = db.Column(db.Text, nullable=False, default="")
+
+class PixPayment(db.Model):
+    """Associação local entre pedido e transação PagHiper."""
+    id = db.Column(db.Integer, primary_key=True)
+    purchase_id = db.Column(db.Integer, db.ForeignKey("purchase.id"), unique=True, nullable=False)
+    transaction_id = db.Column(db.String(80), unique=True, nullable=False)
+    pix_emv = db.Column(db.Text)
+    qr_image_url = db.Column(db.Text)
+    created_at = db.Column(db.DateTime(timezone=True), default=now, nullable=False)
