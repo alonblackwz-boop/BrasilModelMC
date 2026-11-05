@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Models ItemsAdder | BrasilModelMC{% endblock %}
+{% block content %}
+<section class="wrap catalog-header">
+  <span class="kicker">MODELS / ITEMSADDER</span>
+  <h1>Pacotes para <em>ItemsAdder</em></h1>
+  <p>Explore pacotes de modelos para Minecraft. Confira os detalhes e as instruções de cada produto antes de instalar.</p>
+</section>
+<section class="wrap catalog-layout">
+  <div class="results" style="width:100%">
+    <div class="results-heading"><div><h2>Vitrine ItemsAdder</h2><p>{{ models|length }} pacote(s) disponível(is)</p></div></div>
+    {% include 'partials/cards.html' %}
+  </div>
+</section>
+{% endblock %}
