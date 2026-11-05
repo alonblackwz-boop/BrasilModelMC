@@ -6,3 +6,13 @@
 .models-menu:hover .models-submenu,.models-menu:focus-within .models-submenu{display:block}
 .models-submenu a{display:block;padding:.7rem .85rem;border-radius:8px;white-space:nowrap}
 .models-submenu a:hover,.models-submenu a:focus-visible{background:#27365f;color:#c8adff}
+
+/* Faixa promocional global */
+.promo-strip{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;padding:10px 20px;background:linear-gradient(100deg,#235dd8,#6b35c8,#9a3ee2);color:#fff;text-align:center;font-size:13px;font-weight:600}
+.promo-strip strong{margin-left:8px}.promo-code{padding:3px 10px;border:1px dashed #ffffffa6;border-radius:6px;background:#0a123e8c;letter-spacing:1px;font-weight:800}
+.promo-copy{padding:6px 12px;background:#0a1438;color:white;border:1px solid #ffffff80;border-radius:7px;cursor:pointer;font:inherit}
+.promo-copy:hover{background:#18265e}
+.promo-admin{margin:2rem 0;padding:1.5rem;background:#13172b;border:1px solid #40458d;border-radius:16px}
+.promo-admin form{display:grid;gap:12px;margin:15px 0 25px}.promo-admin label{display:grid;gap:5px}.promo-admin input:not([type=checkbox]),.promo-admin select{width:100%;max-width:520px;padding:10px;border:1px solid #4b65a5;border-radius:8px;background:#0b1125;color:white}
+.promo-admin button{justify-self:start}
+@media(max-width:640px){.promo-strip{font-size:12px;gap:7px;padding:9px}.promo-copy{padding:5px 8px}}
