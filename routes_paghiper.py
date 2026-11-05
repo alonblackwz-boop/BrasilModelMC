@@ -34,7 +34,7 @@ def callback():
         or str(result.get("order_id")) != str(purchase.id)
         or str(result.get("value_cents")) != str(purchase.amount_cents)):
         return "", 409
-    if result.get("status") == "paid":
+    if result.get("status") in ("paid", "completed"):
         purchase.status = "paid"
         db.session.commit()
     return "", 200
