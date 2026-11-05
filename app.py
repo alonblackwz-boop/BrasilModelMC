@@ -37,6 +37,7 @@ def create_app(test_config=None):
     from routes_checkout import checkout_bp
     from routes_admin import admin_bp
     from routes_library import library_bp
+    from routes_paghiper import paghiper_bp
     app.register_blueprint(suggestions_bp)
     app.register_blueprint(reviews_bp)
     app.register_blueprint(auth_bp)
@@ -44,10 +45,12 @@ def create_app(test_config=None):
     app.register_blueprint(checkout_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(library_bp)
+    app.register_blueprint(paghiper_bp)
     login_manager.login_view = "auth.login"
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+    csrf.exempt(paghiper_bp)
 
     @app.get("/")
     def index():
