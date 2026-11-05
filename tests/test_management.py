@@ -1,12 +1,15 @@
 """Testes do painel de administração e publicação."""
 import unittest
+import io
+import tempfile
 from app import create_app
 from models import db, User, Model3D
 
 class ManagementTest(unittest.TestCase):
     def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
         self.app = create_app({"TESTING": True, "SQLALCHEMY_DATABASE_URI": "sqlite://",
-                               "WTF_CSRF_ENABLED": False})
+                               "WTF_CSRF_ENABLED": False, "PRIVATE_MODELS_DIR": self.temp.name})
         self.context = self.app.app_context()
         self.context.push()
         db.drop_all()
@@ -24,6 +27,7 @@ class ManagementTest(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.context.pop()
+        self.temp.cleanup()
 
     def login(self, user_id):
         with self.client.session_transaction() as session:
@@ -42,6 +46,11 @@ class ManagementTest(unittest.TestCase):
             "price_cents": 2990, "status": "draft"})
         self.assertEqual(response.status_code, 201)
         model_id = response.get_json()["id"]
+        denied = self.client.patch(f"/admin/api/models/{model_id}", json={"status": "published"})
+        self.assertEqual(denied.status_code, 409)
+        upload = self.client.post(f"/admin/api/models/{model_id}/upload",
+                                  data={"file": (io.BytesIO(b"test"), "modelo.bbmodel")})
+        self.assertEqual(upload.status_code, 201)
         response = self.client.patch(f"/admin/api/models/{model_id}", json={"status": "published"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(db.session.get(Model3D, model_id).status, "published")
