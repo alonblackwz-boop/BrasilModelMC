@@ -16,3 +16,18 @@
 .promo-admin form{display:grid;gap:12px;margin:15px 0 25px}.promo-admin label{display:grid;gap:5px}.promo-admin input:not([type=checkbox]),.promo-admin select{width:100%;max-width:520px;padding:10px;border:1px solid #4b65a5;border-radius:8px;background:#0b1125;color:white}
 .promo-admin button{justify-self:start}
 @media(max-width:640px){.promo-strip{font-size:12px;gap:7px;padding:9px}.promo-copy{padding:5px 8px}}
+
+/* Login e cadastro: campos verticais, responsivos e acessíveis */
+.auth-page{max-width:540px;padding-top:35px;padding-bottom:75px}
+.auth-card{margin:30px 0 0;padding:42px 38px;text-align:left;background:linear-gradient(155deg,#18213a,#14192e 65%,#25204b);border:1px solid #4c5698;border-radius:20px;box-shadow:0 18px 65px #0004}
+.auth-card .kicker{display:block;text-align:center}.auth-card h1{text-align:center;font-size:clamp(28px,4vw,38px);line-height:1.2;letter-spacing:-1px;margin:14px 0 28px}
+.auth-form{display:flex;flex-direction:column;gap:19px;width:100%}
+.auth-form label{display:flex;flex-direction:column;gap:8px;width:100%;color:#dbe5fa;font-size:14px;font-weight:600}
+.auth-form input:not([type=hidden]){display:block;width:100%;min-width:0;height:48px;padding:12px 14px;border:1px solid #42567c;border-radius:10px;background:#0c1429;color:#f0f4ff;font:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.auth-form input:focus{border-color:#8e78ff;box-shadow:0 0 0 3px #7664ee30}
+.auth-form .btn{width:100%;min-height:48px;margin-top:7px}
+.auth-switch{text-align:center;color:#aab8d5;font-size:14px;margin:25px 0 0}
+.auth-switch a{color:#a68bff;font-weight:700}
+.auth-switch a:hover{text-decoration:underline}
+.auth-error{padding:11px 14px;background:#44203b;border:1px solid #a9507b;border-radius:9px;color:#ffd9e7;font-size:13px}
+@media(max-width:560px){.auth-page{padding-top:20px;padding-bottom:45px}.auth-card{margin:20px 0 0;padding:32px 22px;border-radius:16px}}
