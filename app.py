@@ -23,6 +23,9 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
+        PRIVATE_MODELS_DIR=os.environ.get("PRIVATE_MODELS_DIR", os.path.join(app.instance_path, "private_models")),
+        MAX_CONTENT_LENGTH=51 * 1024 * 1024,
+        SESSION_COOKIE_SECURE=os.environ.get("SESSION_COOKIE_SECURE", "false").lower() == "true",
     )
     if test_config:
         app.config.update(test_config)
