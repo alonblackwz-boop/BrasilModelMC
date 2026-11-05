@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Segredos e configuracoes locais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Bancos e dados privados
+*.sqlite
+*.sqlite3
+*.db
+*.sqlite3-*
+private_uploads/
+uploads/
+static/covers/
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
