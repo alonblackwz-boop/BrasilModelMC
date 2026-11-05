@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Administração | BrasilModelMC{% endblock %}
+{% block content %}
+<section class="wrap" style="max-width:1000px;padding:3rem 0">
+<h1>Painel administrativo</h1>
+<p>Gerencie o catálogo de modelos 3D da loja.</p>
+<section style="padding:1.5rem;background:#13172b;border:1px solid #40458d;border-radius:16px">
+<h2>Novo modelo</h2>
+<form id="model-form">
+<label>Título <input name="title" required minlength="3" maxlength="180"></label>
+<label>Descrição <textarea name="description" maxlength="10000"></textarea></label>
+<label>Preço em centavos <input name="price_cents" type="number" min="0" max="100000000" value="0" required></label>
+<label>URL HTTPS da capa <input name="cover_path" type="url" placeholder="https://..."></label>
+<label>Status <select name="status"><option value="draft">Rascunho</option><option value="published">Publicado</option></select></label>
+<button class="btn" type="submit">Criar modelo</button>
+</form>
+<p id="message" role="status"></p>
+</section>
+<h2>Modelos cadastrados</h2>
+<div id="models" aria-live="polite"></div>
+</section>
+<script>
+(() => {
+ const token = {{ csrf_token()|tojson }};
+ const area = document.getElementById('models');
+ const message = document.getElementById('message');
+ async function load() {
+   const response = await fetch('/admin/api/models', {credentials:'same-origin'});
+   if (!response.ok) { message.textContent = 'Falha ao carregar modelos'; return; }
+   const models = await response.json();
+   area.replaceChildren();
+   for (const m of models) {
+     const item = document.createElement('div');
+     item.style.cssText = 'padding:1rem;margin:1rem 0;border:1px solid #40458d;border-radius:12px';
+     const title = document.createElement('strong');
+     title.textContent = m.title;
+     const info = document.createElement('p');
+     info.textContent = 'ID ' + m.id + ' • R$ ' + (m.price_cents/100).toFixed(2) + ' • ' + m.status;
+     const toggle = document.createElement('button');
+     toggle.className = 'btn secondary';
+     toggle.textContent = m.status === 'published' ? 'Retirar do catálogo' : 'Publicar';
+     toggle.addEventListener('click', async () => {
+       toggle.disabled = true;
+       try {
+         const response = await fetch('/admin/api/models/' + m.id, {
+           method:'PATCH', credentials:'same-origin',
+           headers:{'Content-Type':'application/json','X-CSRFToken':token},
+           body:JSON.stringify({status:m.status === 'published' ? 'draft' : 'published'})
+         });
+         if (!response.ok) throw new Error('Não foi possível alterar o modelo');
+         await load();
+       } catch (err) { message.textContent = err.message; toggle.disabled = false; }
+     });
+     item.append(title, info, toggle);
+     area.append(item);
+   }
+ }
+ document.getElementById('model-form').addEventListener('submit', async event => {
+   event.preventDefault();
+   const data = Object.fromEntries(new FormData(event.target));
+   data.price_cents = Number(data.price_cents);
+   try {
+     const response = await fetch('/admin/api/models', {
+       method:'POST', credentials:'same-origin',
+       headers:{'Content-Type':'application/json','X-CSRFToken':token},
+       body:JSON.stringify(data)
+     });
+     if (!response.ok) throw new Error('Não foi possível cadastrar o modelo');
+     message.textContent = 'Modelo cadastrado';
+     event.target.reset();
+     await load();
+   } catch (err) { message.textContent = err.message; }
+ });
+ load();
+})();
+</script>
+{% endblock %}
