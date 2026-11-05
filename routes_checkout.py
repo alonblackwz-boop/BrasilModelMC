@@ -4,7 +4,7 @@ Não cria cobranças reais sem configuração e integração validada com o prov
 Valores sempre são calculados no servidor a partir do modelo publicado.
 """
 from datetime import datetime, timezone
-from flask import Blueprint, abort, jsonify
+from flask import Blueprint, abort, jsonify, render_template
 from flask_login import current_user, login_required
 from models import db, Model3D, Purchase
 
@@ -99,3 +99,12 @@ def issue_pix(order_id):
         return jsonify({"error": "Falha ao registrar cobrança; contate o suporte antes de tentar novamente"}), 409
     return jsonify({"order_id": order.id, "status": "pending",
                     "pix_code": payment.pix_emv, "qr_image_url": payment.qr_image_url}), 201
+
+@checkout_bp.get("/orders/<int:order_id>/page")
+@login_required
+def checkout_page(order_id):
+    order = db.session.get(Purchase, order_id)
+    if order is None or order.buyer_id != current_user.id:
+        abort(404)
+    model = db.session.get(Model3D, order.model_id)
+    return render_template("checkout.html", order=order, model=model)
