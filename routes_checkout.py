@@ -94,13 +94,13 @@ def issue_pix(order_id):
                             current_user.email, name, document, callback_url)
     except PagHiperError:
         return jsonify({"error": "PagHiper indisponível"}), 503
-    response = result.get("pix_create_request", {})
-    pix = response.get("pix_code") or {}
+    response = result.get("create_request", {})
+    pix = response.get("bank_slip") or {}
     transaction = str(response.get("transaction_id", ""))
-    if response.get("result") != "success" or not transaction or not pix.get("emv"):
+    if response.get("result") != "success" or not transaction or not pix.get("digitable_line"):
         return jsonify({"error": "PagHiper não retornou uma cobrança válida"}), 502
     payment = PixPayment(purchase_id=order.id, transaction_id=transaction,
-                         pix_emv=pix.get("emv"), qr_image_url=pix.get("qrcode_image_url"))
+                         pix_emv=pix.get("emv"), qr_image_url=pix.get("url_slip"))
     db.session.add(payment)
     try:
         db.session.commit()
