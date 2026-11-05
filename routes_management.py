@@ -124,7 +124,7 @@ def upload_model_file(model_id):
     import secrets
     from pathlib import Path
     from flask import current_app
-        require_admin()
+    require_admin()
     model = db.session.get(Model3D, model_id)
     if model is None:
         abort(404)
@@ -155,7 +155,7 @@ def upload_model_file(model_id):
                 out.write(chunk)
         if total == 0:
             abort(400, "Arquivo vazio")
-            model.file_path = filename
+        model.file_path = filename
         db.session.commit()
     except Exception:
         db.session.rollback()
