@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Minha biblioteca | BrasilModelMC{% endblock %}
+{% block content %}
+<section class="wrap" style="padding:3rem 0;min-height:55vh">
+<h1>Minha biblioteca</h1>
+<p>Baixe seus modelos adquiridos e os modelos gratuitos disponíveis.</p>
+{% if models %}
+<div class="catalog-grid">
+{% for model in models %}
+<article style="padding:1.5rem;border:1px solid #40458d;border-radius:14px;margin:1rem 0">
+<h2>{{ model.title }}</h2>
+<p>{% if model.price_cents == 0 %}Gratuito{% else %}Adquirido{% endif %}</p>
+<a class="btn" href="{{ url_for('library.download', model_id=model.id) }}">Baixar modelo</a>
+</article>
+{% endfor %}
+</div>
+{% else %}
+<p>Sua biblioteca ainda não tem modelos disponíveis.</p>
+<a class="btn secondary" href="{{ url_for('catalog') }}">Explorar catálogo</a>
+{% endif %}
+</section>
+{% endblock %}
